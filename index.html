@@ -5,720 +5,352 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Seguimiento de Obra — Arq. Alvaro Chapa Villarreal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <style>
-:root{
-  --bg:#F5F4F0;--surface:#FFF;--border:#E2E0D8;--border2:#CECCC2;
-  --text1:#1A1916;--text2:#5A5850;--text3:#9A9890;
-  --accent:#1F3864;--accent2:#2E5599;
-  --success:#2A7A4B;--suc-bg:#EAF4EE;
-  --warn:#854F0B;--warn-bg:#FDF3E3;
-  --danger:#A32D2D;--dan-bg:#FCEBEB;
-  --radius:12px;--radius-sm:8px;
-  --shadow:0 2px 12px rgba(0,0,0,0.06);
-}
+:root{--bg:#F5F4F0;--surface:#FFF;--border:#E2E0D8;--border2:#CECCC2;--text1:#1A1916;--text2:#5A5850;--text3:#9A9890;--accent:#1F3864;--accent2:#2E5599;--success:#2A7A4B;--suc-bg:#EAF4EE;--warn:#854F0B;--warn-bg:#FDF3E3;--danger:#A32D2D;--dan-bg:#FCEBEB;--radius:12px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.06);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text1);min-height:100vh;padding-bottom:40px;}
-
-/* HEADER */
 .app-header{background:var(--accent);padding:16px 18px 12px;position:sticky;top:0;z-index:100;}
 .header-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:11px;}
 .avatar{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#fff;flex-shrink:0;border:1.5px solid rgba(255,255,255,0.22);}
 .header-name{font-size:14px;font-weight:600;color:#fff;line-height:1.2;}
 .header-sub{font-size:11px;color:rgba(255,255,255,0.65);margin-top:1px;}
 .header-badge{margin-left:auto;font-size:10px;font-weight:500;background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.85);padding:3px 10px;border-radius:20px;white-space:nowrap;cursor:pointer;}
-
 .main{max-width:640px;margin:0 auto;padding:14px 13px 0;}
-
-/* CARDS */
 .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:11px;box-shadow:var(--shadow);overflow:hidden;}
 .card-head{padding:11px 15px 0;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text3);}
 .card-body{padding:11px 15px 15px;}
-
-/* LOGIN */
 .login-wrap{max-width:400px;margin:60px auto 0;padding:0 16px;}
 .login-title{font-size:20px;font-weight:600;color:var(--accent);margin-bottom:6px;}
 .login-sub{font-size:13px;color:var(--text2);margin-bottom:24px;}
-.field{margin-bottom:12px;}
-.field:last-child{margin-bottom:0;}
+.field{margin-bottom:12px;}.field:last-child{margin-bottom:0;}
 label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:500;}
-input[type=text],input[type=password],input[type=email],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);color:var(--text1);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
-input:focus,select:focus,textarea:focus{border-color:var(--accent2);}
+input[type=text],input[type=password],input[type=email],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);color:var(--text1);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
 select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A5850' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;}
 textarea{resize:vertical;min-height:80px;}
-
-/* BUTTONS */
-.btn{border:none;border-radius:var(--radius-sm);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
-.btn:active{opacity:0.8;}
-.btn-primary{background:var(--accent);color:#fff;width:100%;padding:12px;}
+.btn{border:none;border-radius:var(--radius-sm);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-primary{background:var(--accent);color:#fff;width:100%;padding:12px;display:block;}
 .btn-success{background:var(--success);color:#fff;}
 .btn-outline{background:none;border:1px solid var(--border2);color:var(--text2);}
-.btn-danger{background:var(--danger);color:#fff;}
 .btn-sm{font-size:12px;padding:6px 12px;}
-
-/* TABS */
 .tabs{display:flex;gap:5px;padding:11px 15px 0;overflow-x:auto;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
-.tab{font-size:12px;font-weight:500;padding:5px 13px;border:1px solid var(--border2);border-radius:20px;cursor:pointer;white-space:nowrap;color:var(--text2);background:var(--surface);transition:all 0.15s;flex-shrink:0;}
+.tab{font-size:12px;font-weight:500;padding:5px 13px;border:1px solid var(--border2);border-radius:20px;cursor:pointer;white-space:nowrap;color:var(--text2);background:var(--surface);flex-shrink:0;}
 .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .panel{display:none;}.panel.active{display:block;}
-
-/* PROYECTO */
-.proy-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px;cursor:pointer;transition:border-color 0.15s;box-shadow:var(--shadow);}
-.proy-card:hover{border-color:var(--accent2);}
-.proy-nombre{font-size:14px;font-weight:600;color:var(--text1);margin-bottom:3px;}
+.proy-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px;cursor:pointer;box-shadow:var(--shadow);}
+.proy-nombre{font-size:14px;font-weight:600;margin-bottom:3px;}
 .proy-meta{font-size:12px;color:var(--text2);margin-bottom:8px;}
-.proy-prog-track{height:6px;background:var(--bg);border-radius:3px;border:1px solid var(--border);overflow:hidden;}
-.proy-prog-fill{height:100%;border-radius:3px;background:var(--success);}
+.prog-track{height:7px;background:var(--bg);border-radius:4px;border:1px solid var(--border);overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;background:var(--success);}
 .proy-footer{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px;}
-
-/* AVANCE */
 .etapa-row{padding:10px 0;border-bottom:1px solid var(--border);}
 .etapa-row:last-child{border-bottom:none;}
 .etapa-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
-.etapa-name{font-size:13px;font-weight:500;color:var(--text1);}
+.etapa-name{font-size:13px;font-weight:500;}
 .etapa-pct{font-size:13px;font-weight:600;}
-.prog-track{height:7px;background:var(--bg);border-radius:4px;border:1px solid var(--border);overflow:hidden;margin-bottom:4px;}
-.prog-fill{height:100%;border-radius:4px;transition:width 0.4s;}
-.etapa-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);}
-
-/* BITÁCORA */
-.bit-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px;box-shadow:var(--shadow);}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px;}
+.metric{background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 12px;}
+.metric-lbl{font-size:10px;color:var(--text3);margin-bottom:3px;font-weight:500;text-transform:uppercase;}
+.metric-val{font-size:17px;font-weight:600;}
+.bit-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px;}
 .bit-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
 .bit-badge{font-size:10px;padding:2px 9px;border-radius:var(--radius-sm);font-weight:500;background:var(--suc-bg);color:var(--success);}
 .bit-fecha{font-size:11px;color:var(--text3);}
-.bit-texto{font-size:13px;color:var(--text1);line-height:1.5;margin-bottom:6px;}
-.bit-estado{font-size:11px;padding:2px 8px;border-radius:var(--radius-sm);display:inline-block;}
-.estado-tiempo{background:var(--suc-bg);color:var(--success);}
-.estado-retraso{background:var(--warn-bg);color:var(--warn);}
-.estado-adelanto{background:#EEF3FB;color:var(--accent2);}
-.bit-img-wrap{margin-top:8px;}
-.bit-img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border);}
-
-/* MÉTRICAS */
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px;}
-.metric{background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);padding:10px 12px;}
-.metric-lbl{font-size:10px;color:var(--text3);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;}
-.metric-val{font-size:17px;font-weight:600;color:var(--text1);}
-
-/* ALERTAS */
+.bit-texto{font-size:13px;line-height:1.5;margin-bottom:6px;}
+.bit-img{width:100%;max-height:200px;object-fit:cover;border-radius:var(--radius-sm);margin-top:8px;border:1px solid var(--border);}
 .alerta-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);line-height:1.5;}
 .alerta-item:last-child{border-bottom:none;}
 .alerta-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
-
-/* MISC */
-.badge{font-size:10px;padding:2px 9px;border-radius:var(--radius-sm);font-weight:500;}
-.badge-en{background:var(--suc-bg);color:var(--success);}
-.badge-pausa{background:var(--warn-bg);color:var(--warn);}
-.badge-fin{background:#EEF3FB;color:var(--accent2);}
-.note{font-size:11px;color:var(--text3);line-height:1.6;}
-.empty{text-align:center;padding:30px 0;color:var(--text3);font-size:13px;}
-.loading{text-align:center;padding:20px;color:var(--text3);font-size:12px;}
 .range-wrap{display:flex;align-items:center;gap:10px;}
 .range-wrap input[type=range]{flex:1;accent-color:var(--accent);}
 .range-val{font-size:14px;font-weight:600;color:var(--accent);min-width:38px;text-align:right;}
+.foto-preview{width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius-sm);margin-top:6px;border:1px solid var(--border);}
+.badge{font-size:10px;padding:2px 9px;border-radius:var(--radius-sm);font-weight:500;}
+.badge-en{background:var(--suc-bg);color:var(--success);}
+.empty{text-align:center;padding:30px 0;color:var(--text3);font-size:13px;}
+.loading{text-align:center;padding:20px;color:var(--text3);font-size:12px;}
 .divider{height:1px;background:var(--border);margin:12px 0;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.text-success{color:var(--success);}
-.text-warn{color:var(--warn);}
-.text-danger{color:var(--danger);}
-.foto-preview{width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius-sm);margin-top:6px;border:1px solid var(--border);}
-.app-footer{text-align:center;font-size:11px;color:var(--text3);margin-top:16px;padding:0 13px;}
+.note{font-size:11px;color:var(--text3);line-height:1.6;}
+.app-footer{text-align:center;font-size:11px;color:var(--text3);margin-top:16px;}
 @media(max-width:380px){.row2{grid-template-columns:1fr;}.metrics{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="screen-login">
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="avatar">AC</div>
-      <div>
-        <div class="header-name">Arq. Alvaro Chapa Villarreal</div>
-        <div class="header-sub">Seguimiento de obra digital</div>
-      </div>
-    </div>
-  </header>
+  <header class="app-header"><div class="header-inner"><div class="avatar">AC</div><div><div class="header-name">Arq. Alvaro Chapa Villarreal</div><div class="header-sub">Seguimiento de obra digital</div></div></div></header>
   <div class="login-wrap">
     <div class="login-title">Bienvenido</div>
-    <div class="login-sub">Ingresa con tu correo y contraseña</div>
-    <div class="field"><label>Correo electrónico</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
-    <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+    <div class="login-sub">Ingresa con tu correo y contrasena</div>
+    <div class="field"><label>Correo</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
+    <div class="field"><label>Contrasena</label><input type="password" id="login-pass" placeholder=""></div>
     <div style="margin-top:16px;"><button class="btn btn-primary" id="btn-login">Entrar</button></div>
     <p id="login-error" style="color:var(--danger);font-size:12px;margin-top:10px;display:none;"></p>
-    <p class="note" style="margin-top:16px;text-align:center;">¿Eres cliente? Usa el correo y contraseña que te proporcionó el despacho.</p>
+    <p class="note" style="margin-top:16px;text-align:center;">Cliente: usa el correo y contrasena que te dio el despacho.</p>
   </div>
 </div>
 
-<!-- RESIDENTE / ADMIN -->
 <div id="screen-residente" style="display:none;">
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="avatar">AC</div>
-      <div>
-        <div class="header-name">Arq. Alvaro Chapa Villarreal</div>
-        <div class="header-sub" id="res-role-label">Residente de obra</div>
-      </div>
-      <div class="header-badge" onclick="cerrarSesion()">Salir</div>
-    </div>
-  </header>
+  <header class="app-header"><div class="header-inner"><div class="avatar">AC</div><div><div class="header-name">Arq. Alvaro Chapa Villarreal</div><div class="header-sub">Residente de obra</div></div><div class="header-badge" id="btn-salir">Salir</div></div></header>
   <div class="main">
-
-    <div id="res-lista-proyectos">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <span style="font-size:13px;font-weight:500;color:var(--text2);">Mis proyectos</span>
-        <button class="btn btn-success btn-sm" onclick="mostrarNuevoProyecto()">+ Nuevo proyecto</button>
-      </div>
-      <div id="res-proyectos-lista"><div class="loading">Cargando proyectos…</div></div>
+    <div id="res-lista">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span style="font-size:13px;font-weight:500;color:var(--text2);">Mis proyectos</span><button class="btn btn-success btn-sm" id="btn-nuevo-proy">+ Nuevo</button></div>
+      <div id="res-proyectos"><div class="loading">Cargando...</div></div>
     </div>
-
-    <!-- NUEVO PROYECTO -->
-    <div id="res-nuevo-proyecto" style="display:none;">
-      <div class="card">
-        <div class="card-head">Nuevo proyecto</div>
-        <div class="card-body">
-          <div class="field"><label>Nombre del proyecto</label><input type="text" id="np-nombre" placeholder="Casa Familia Martínez — Escobedo"></div>
-          <div class="field"><label>Cliente (nombre)</label><input type="text" id="np-cliente" placeholder="Familia Martínez"></div>
-          <div class="field"><label>Correo del cliente</label><input type="email" id="np-email" placeholder="cliente@correo.com"></div>
-          <div class="field"><label>Contraseña para el cliente</label><input type="text" id="np-pass" placeholder="Ej: obra2025" value="obra2025"></div>
-          <div class="row2">
-            <div class="field"><label>Fecha inicio</label><input type="text" id="np-inicio" placeholder="01 Mar 2025"></div>
-            <div class="field"><label>Fecha entrega (est.)</label><input type="text" id="np-fin" placeholder="30 Jun 2025"></div>
-          </div>
-          <div class="field"><label>Tipo de obra</label>
-            <select id="np-tipo">
-              <option>Casa habitación</option><option>Departamento</option><option>Oficinas</option>
-              <option>Local comercial</option><option>Bodega / nave</option><option>Remodelación</option>
-            </select>
-          </div>
-          <div class="field"><label>Notas iniciales</label><textarea id="np-notas" placeholder="Descripción general del proyecto…"></textarea></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
-            <button class="btn btn-outline" onclick="cancelarNuevoProyecto()">Cancelar</button>
-            <button class="btn btn-primary" onclick="crearProyecto()">Crear proyecto</button>
-          </div>
+    <div id="res-form-nuevo" style="display:none;">
+      <div class="card"><div class="card-head">Nuevo proyecto</div><div class="card-body">
+        <div class="field"><label>Nombre del proyecto</label><input type="text" id="np-nombre" placeholder="Casa Familia Martinez"></div>
+        <div class="field"><label>Cliente</label><input type="text" id="np-cliente" placeholder="Familia Martinez"></div>
+        <div class="field"><label>Correo del cliente</label><input type="email" id="np-email" placeholder="cliente@correo.com"></div>
+        <div class="field"><label>Contrasena para el cliente</label><input type="text" id="np-pass" value="obra2025"></div>
+        <div class="row2">
+          <div class="field"><label>Fecha inicio</label><input type="text" id="np-inicio" placeholder="01 Mar 2025"></div>
+          <div class="field"><label>Entrega estimada</label><input type="text" id="np-fin" placeholder="30 Jun 2025"></div>
         </div>
-      </div>
+        <div class="field"><label>Tipo</label><select id="np-tipo"><option>Casa habitacion</option><option>Departamento</option><option>Oficinas</option><option>Local comercial</option><option>Bodega / nave</option><option>Remodelacion</option></select></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+          <button class="btn btn-outline" id="btn-cancel-nuevo">Cancelar</button>
+          <button class="btn btn-success" id="btn-crear-proy" style="width:auto;">Crear proyecto</button>
+        </div>
+        <p id="np-msg" style="font-size:12px;margin-top:8px;display:none;color:var(--text2);"></p>
+      </div></div>
     </div>
-
-    <!-- DETALLE PROYECTO RESIDENTE -->
     <div id="res-detalle" style="display:none;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-        <button class="btn btn-outline btn-sm" onclick="volverLista()">← Proyectos</button>
-        <span id="res-det-nombre" style="font-size:14px;font-weight:600;color:var(--text1);"></span>
+        <button class="btn btn-outline btn-sm" id="btn-volver">Proyectos</button>
+        <span id="res-det-nombre" style="font-size:14px;font-weight:600;"></span>
       </div>
-
       <div class="card">
         <div class="tabs">
-          <div class="tab active" onclick="showResTab('avance',this)">Avance</div>
-          <div class="tab" onclick="showResTab('reporte',this)">+ Reporte</div>
-          <div class="tab" onclick="showResTab('bitacora',this)">Bitácora</div>
-          <div class="tab" onclick="showResTab('alertas',this)">Alertas</div>
+          <div class="tab active" data-tab="avance">Avance</div>
+          <div class="tab" data-tab="reporte">+ Reporte</div>
+          <div class="tab" data-tab="bitacora">Bitacora</div>
+          <div class="tab" data-tab="alertas">Alertas</div>
         </div>
-
         <div id="res-tab-avance" class="panel active card-body">
           <div class="metrics">
             <div class="metric"><div class="metric-lbl">Avance general</div><div class="metric-val" id="res-avance-pct">0%</div></div>
-            <div class="metric"><div class="metric-lbl">Último reporte</div><div class="metric-val" id="res-ultimo">—</div></div>
+            <div class="metric"><div class="metric-lbl">Ultimo reporte</div><div class="metric-val" id="res-ultimo" style="font-size:13px;">-</div></div>
           </div>
-          <div id="res-etapas-lista"></div>
+          <div id="res-etapas"></div>
         </div>
-
         <div id="res-tab-reporte" class="panel card-body">
-          <div class="field"><label>Etapa de obra</label>
-            <select id="rep-etapa">
-              <option>Cimentación y estructura</option><option>Albañilería y muros</option>
-              <option>Instalaciones</option><option>Acabados interiores</option>
-              <option>Fachada y exteriores</option><option>Limpieza y entrega</option>
-            </select>
-          </div>
-          <div class="field"><label>% de avance en esta etapa</label>
-            <div class="range-wrap">
-              <input type="range" min="0" max="100" step="5" value="50" id="rep-pct"
-                oninput="document.getElementById('rep-pct-val').textContent=this.value+'%'">
-              <span class="range-val" id="rep-pct-val">50%</span>
-            </div>
-          </div>
-          <div class="field"><label>Nota del residente</label>
-            <textarea id="rep-nota" placeholder="Describe el avance, observaciones, materiales, incidencias…"></textarea>
-          </div>
-          <div class="field"><label>Estado general</label>
-            <select id="rep-estado">
-              <option value="tiempo">En tiempo</option>
-              <option value="retraso_menor">Retraso menor</option>
-              <option value="retraso">Retraso significativo</option>
-              <option value="adelanto">Adelantado</option>
-            </select>
-          </div>
-          <div class="field"><label>Foto de avance (opcional)</label>
-            <input type="file" id="rep-foto" accept="image/*" capture="environment" onchange="previewFoto(this)">
-            <img id="rep-foto-preview" class="foto-preview" style="display:none;">
-          </div>
-          <button class="btn btn-primary" style="margin-top:8px;" onclick="guardarReporte()">Publicar reporte</button>
+          <div class="field"><label>Etapa</label><select id="rep-etapa"><option>Cimentacion y estructura</option><option>Albanileria y muros</option><option>Instalaciones</option><option>Acabados interiores</option><option>Fachada y exteriores</option><option>Limpieza y entrega</option></select></div>
+          <div class="field"><label>% de avance</label><div class="range-wrap"><input type="range" min="0" max="100" step="5" value="50" id="rep-pct"><span class="range-val" id="rep-pct-val">50%</span></div></div>
+          <div class="field"><label>Nota</label><textarea id="rep-nota" placeholder="Describe el avance..."></textarea></div>
+          <div class="field"><label>Estado</label><select id="rep-estado"><option value="tiempo">En tiempo</option><option value="retraso_menor">Retraso menor</option><option value="retraso">Retraso significativo</option><option value="adelanto">Adelantado</option></select></div>
+          <div class="field"><label>Foto (opcional)</label><input type="file" id="rep-foto" accept="image/*" capture="environment"><img id="rep-foto-prev" class="foto-preview" style="display:none;"></div>
+          <button class="btn btn-primary" id="btn-pub-reporte" style="margin-top:8px;">Publicar reporte</button>
           <p id="rep-msg" style="font-size:12px;margin-top:8px;display:none;"></p>
         </div>
-
-        <div id="res-tab-bitacora" class="panel card-body">
-          <div id="res-bitacora-lista"><div class="loading">Cargando…</div></div>
-        </div>
-
+        <div id="res-tab-bitacora" class="panel card-body"><div id="res-bitacora"><div class="loading">Cargando...</div></div></div>
         <div id="res-tab-alertas" class="panel card-body">
-          <div class="field"><label>Nueva alerta o nota</label>
-            <textarea id="alerta-texto" placeholder="Ej: Retraso en entrega de herrería…"></textarea>
-          </div>
-          <div class="field"><label>Tipo</label>
-            <select id="alerta-tipo">
-              <option value="warn">⚠ Advertencia</option>
-              <option value="ok">✓ Aprobado / completado</option>
-              <option value="danger">✗ Problema crítico</option>
-              <option value="info">ℹ Información</option>
-            </select>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="guardarAlerta()">Agregar alerta</button>
+          <div class="field"><label>Nueva alerta</label><textarea id="alerta-texto" placeholder="Describe la alerta..."></textarea></div>
+          <div class="field"><label>Tipo</label><select id="alerta-tipo"><option value="warn">Advertencia</option><option value="ok">Completado</option><option value="danger">Problema critico</option><option value="info">Informacion</option></select></div>
+          <button class="btn btn-success btn-sm" id="btn-add-alerta">Agregar</button>
           <div class="divider"></div>
-          <div id="res-alertas-lista"><div class="loading">Cargando…</div></div>
+          <div id="res-alertas"><div class="loading">Cargando...</div></div>
         </div>
       </div>
-
-      <div class="app-footer">
-        Arq. Alvaro Chapa Villarreal · 81 2289 4100<br>
-        Seguimiento digital de obra · NL 2025
-      </div>
+      <div class="app-footer">Arq. Alvaro Chapa · 81 2289 4100 · Seguimiento de obra NL 2025</div>
     </div>
   </div>
 </div>
 
-<!-- CLIENTE (solo lectura) -->
 <div id="screen-cliente" style="display:none;">
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="avatar">AC</div>
-      <div>
-        <div class="header-name">Seguimiento de su obra</div>
-        <div class="header-sub">Arq. Alvaro Chapa · 81 2289 4100</div>
-      </div>
-      <div class="header-badge" onclick="cerrarSesion()">Salir</div>
-    </div>
-  </header>
-  <div class="main">
-    <div id="cli-contenido"><div class="loading">Cargando su proyecto…</div></div>
-  </div>
+  <header class="app-header"><div class="header-inner"><div class="avatar">AC</div><div><div class="header-name">Seguimiento de su obra</div><div class="header-sub">Arq. Alvaro Chapa · 81 2289 4100</div></div><div class="header-badge" id="btn-salir-cli">Salir</div></div></header>
+  <div class="main"><div id="cli-contenido"><div class="loading">Cargando...</div></div></div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, onSnapshot, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getStorage, ref, uploadBytes, getDownloadURL }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAdOBRbIMan74KL_-kKjwL6fHEaNhZFrqg",
-  authDomain: "seguimiento-de-obra-chapa.firebaseapp.com",
-  projectId: "seguimiento-de-obra-chapa",
-  storageBucket: "seguimiento-de-obra-chapa.firebasestorage.app",
-  messagingSenderId: "130596217320",
-  appId: "1:130596217320:web:d58c6d35f17b9434f1445d"
-};
-
-const app  = initializeApp(firebaseConfig);
-const db   = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
-
-// Admin email
-const ADMIN_EMAIL = "alvaro.chapa@despacho.com";
-
-let proyectoActivo = null;
-let userRole = null;
-let currentUser = null;
-
-const COLS = {
-  "Cimentación y estructura":"#378ADD",
-  "Albañilería y muros":"#1D9E75",
-  "Instalaciones":"#7F77DD",
-  "Acabados interiores":"#EF9F27",
-  "Fachada y exteriores":"#D85A30",
-  "Limpieza y entrega":"#2A7A4B"
-};
-
-function fmt(d){
-  if(!d) return "—";
-  if(d.toDate) d=d.toDate();
-  return d.toLocaleDateString("es-MX",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
-}
-
-// ── AUTH ────────────────────────────────────────────────
-onAuthStateChanged(auth, async user=>{
-  if(!user){ showScreen("login"); return; }
-  currentUser = user;
-  const uDoc = await getDoc(doc(db,"usuarios",user.uid));
-  if(uDoc.exists()){
-    const data = uDoc.data();
-    userRole = data.role;
-    if(data.role==="residente"||data.role==="admin"){
-      document.getElementById("res-role-label").textContent = data.role==="admin"?"Administrador":"Residente de obra";
-      showScreen("residente");
-      cargarProyectosResidente();
-    } else if(data.role==="cliente"){
-      showScreen("cliente");
-      cargarProyectoCliente(data.proyectoId);
-    }
-  } else {
-    showScreen("login");
-    await signOut(auth);
-  }
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAdOBRbIMan74KL_-kKjwL6fHEaNhZFrqg",
+  authDomain:"seguimiento-de-obra-chapa.firebaseapp.com",
+  projectId:"seguimiento-de-obra-chapa",
+  storageBucket:"seguimiento-de-obra-chapa.firebasestorage.app",
+  messagingSenderId:"130596217320",
+  appId:"1:130596217320:web:d58c6d35f17b9434f1445d"
 });
 
-window.loginUser = async function(){
-  const email = document.getElementById("login-email").value.trim();
-  const pass  = document.getElementById("login-pass").value;
-  const err   = document.getElementById("login-error");
+var auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage();
+var ETAPAS=["Cimentacion y estructura","Albanileria y muros","Instalaciones","Acabados interiores","Fachada y exteriores","Limpieza y entrega"];
+var COLS={"Cimentacion y estructura":"#378ADD","Albanileria y muros":"#1D9E75","Instalaciones":"#7F77DD","Acabados interiores":"#EF9F27","Fachada y exteriores":"#D85A30","Limpieza y entrega":"#2A7A4B"};
+var ALERT_COLS={warn:"#BA7517",ok:"#2A7A4B",danger:"#A32D2D",info:"#2E5599"};
+var proyectoActivo=null,unsubBit=null,unsubAlt=null;
+
+function fmt(ts){if(!ts)return"-";var d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString("es-MX",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});}
+function avgEtapas(etapas){var v=Object.values(etapas||{});return v.length?Math.round(v.reduce(function(s,x){return s+x;},0)/v.length):0;}
+function showScreen(s){["login","residente","cliente"].forEach(function(id){document.getElementById("screen-"+id).style.display="none";});document.getElementById("screen-"+s).style.display="block";}
+
+auth.onAuthStateChanged(function(user){
+  if(!user){showScreen("login");return;}
+  db.collection("usuarios").doc(user.uid).get().then(function(snap){
+    if(!snap.exists){auth.signOut();showScreen("login");return;}
+    var d=snap.data();
+    if(d.role==="residente"||d.role==="admin"){showScreen("residente");cargarProyectos();}
+    else if(d.role==="cliente"){showScreen("cliente");cargarCliente(d.proyectoId);}
+  }).catch(function(e){console.error(e);});
+});
+
+document.getElementById("btn-login").onclick=function(){
+  var email=document.getElementById("login-email").value.trim();
+  var pass=document.getElementById("login-pass").value;
+  var err=document.getElementById("login-error");
   err.style.display="none";
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch(e){
-    err.textContent = "Correo o contraseña incorrectos.";
-    err.style.display="block";
-  }
+  auth.signInWithEmailAndPassword(email,pass).catch(function(e){
+    err.textContent="Correo o contrasena incorrectos.";err.style.display="block";
+    console.error(e);
+  });
 };
 
-window.cerrarSesion = async function(){
-  await signOut(auth);
-  showScreen("login");
-};
+document.getElementById("btn-salir").onclick=function(){auth.signOut();};
+document.getElementById("btn-salir-cli").onclick=function(){auth.signOut();};
 
-// ── PROYECTOS RESIDENTE ─────────────────────────────────
-async function cargarProyectosResidente(){
-  const lista = document.getElementById("res-proyectos-lista");
-  const q = query(collection(db,"proyectos"), orderBy("creado","desc"));
-  onSnapshot(q, snap=>{
-    if(snap.empty){ lista.innerHTML='<div class="empty">Sin proyectos aún. Crea el primero.</div>'; return; }
-    lista.innerHTML = snap.docs.map(d=>{
-      const p=d.data(); const id=d.id;
-      const avg = calcAvance(p.etapas||{});
-      const estado = p.estado||"activo";
-      return `<div class="proy-card" onclick="abrirProyecto('${id}')">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-          <div class="proy-nombre">${p.nombre||"Sin nombre"}</div>
-          <span class="badge badge-${estado==="activo"?"en":estado==="pausado"?"pausa":"fin"}">${estado==="activo"?"En obra":estado==="pausado"?"Pausado":"Terminado"}</span>
-        </div>
-        <div class="proy-meta">Cliente: ${p.cliente||"—"} · ${p.tipo||""}</div>
-        <div class="proy-prog-track"><div class="proy-prog-fill" style="width:${avg}%;"></div></div>
-        <div class="proy-footer"><span>${p.inicio||"—"} → ${p.fin||"—"}</span><span>${avg}% avance</span></div>
-      </div>`;
+function cargarProyectos(){
+  db.collection("proyectos").orderBy("creado","desc").onSnapshot(function(snap){
+    var el=document.getElementById("res-proyectos");
+    if(snap.empty){el.innerHTML='<div class="empty">Sin proyectos aun.</div>';return;}
+    el.innerHTML=snap.docs.map(function(d){
+      var p=d.data(),id=d.id,a=avgEtapas(p.etapas);
+      return'<div class="proy-card" onclick="abrirProyecto(\''+id+'\')"><div style="display:flex;justify-content:space-between;"><div class="proy-nombre">'+(p.nombre||"Sin nombre")+'</div><span class="badge badge-en">En obra</span></div><div class="proy-meta">Cliente: '+(p.cliente||"-")+' - '+(p.tipo||"")+'</div><div class="prog-track"><div class="prog-fill" style="width:'+a+'%;"></div></div><div class="proy-footer"><span>'+(p.inicio||"")+' - '+(p.fin||"")+'</span><span>'+a+'% avance</span></div></div>';
     }).join("");
   });
 }
 
-function calcAvance(etapas){
-  const vals = Object.values(etapas);
-  if(!vals.length) return 0;
-  return Math.round(vals.reduce((s,v)=>s+v,0)/vals.length);
-}
+document.getElementById("btn-nuevo-proy").onclick=function(){document.getElementById("res-lista").style.display="none";document.getElementById("res-form-nuevo").style.display="block";};
+document.getElementById("btn-cancel-nuevo").onclick=function(){document.getElementById("res-lista").style.display="block";document.getElementById("res-form-nuevo").style.display="none";};
 
-window.mostrarNuevoProyecto = function(){
-  document.getElementById("res-lista-proyectos").style.display="none";
-  document.getElementById("res-nuevo-proyecto").style.display="block";
-};
-
-window.cancelarNuevoProyecto = function(){
-  document.getElementById("res-lista-proyectos").style.display="block";
-  document.getElementById("res-nuevo-proyecto").style.display="none";
-};
-
-window.crearProyecto = async function(){
-  const nombre  = document.getElementById("np-nombre").value.trim();
-  const cliente = document.getElementById("np-cliente").value.trim();
-  const email   = document.getElementById("np-email").value.trim();
-  const pass    = document.getElementById("np-pass").value.trim();
-  const inicio  = document.getElementById("np-inicio").value.trim();
-  const fin     = document.getElementById("np-fin").value.trim();
-  const tipo    = document.getElementById("np-tipo").value;
-  const notas   = document.getElementById("np-notas").value.trim();
-  if(!nombre||!cliente||!email||!pass){ alert("Completa nombre, cliente, correo y contraseña."); return; }
-  try {
-    // Crear proyecto
-    const pRef = await addDoc(collection(db,"proyectos"),{
-      nombre, cliente, email, inicio, fin, tipo, notas,
-      estado:"activo", etapas:{}, creado:serverTimestamp(),
-      residenteUid: currentUser.uid
+document.getElementById("btn-crear-proy").onclick=function(){
+  var nombre=document.getElementById("np-nombre").value.trim();
+  var cliente=document.getElementById("np-cliente").value.trim();
+  var email=document.getElementById("np-email").value.trim();
+  var pass=document.getElementById("np-pass").value.trim();
+  var inicio=document.getElementById("np-inicio").value.trim();
+  var fin=document.getElementById("np-fin").value.trim();
+  var tipo=document.getElementById("np-tipo").value;
+  var msg=document.getElementById("np-msg");
+  if(!nombre||!cliente||!email||!pass){alert("Completa todos los campos.");return;}
+  msg.textContent="Creando...";msg.style.display="block";
+  db.collection("proyectos").add({nombre:nombre,cliente:cliente,email:email,inicio:inicio,fin:fin,tipo:tipo,estado:"activo",etapas:{},creado:firebase.firestore.FieldValue.serverTimestamp()}).then(function(pRef){
+    return auth.createUserWithEmailAndPassword(email,pass).then(function(cred){
+      return db.collection("usuarios").doc(cred.user.uid).set({role:"cliente",proyectoId:pRef.id,nombre:cliente,email:email});
+    }).then(function(){
+      msg.textContent="Proyecto creado. Cliente: "+email+" / Contrasena: "+pass;
+      setTimeout(function(){document.getElementById("btn-cancel-nuevo").click();},5000);
     });
-    // Crear usuario cliente
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    await setDoc(doc(db,"usuarios",cred.user.uid),{
-      role:"cliente", proyectoId:pRef.id, nombre:cliente, email
-    });
-    // Re-login como residente
-    await signInWithEmailAndPassword(auth, currentUser.email, "");
-    cancelarNuevoProyecto();
-    alert(`Proyecto creado.\nCliente: ${email}\nContraseña: ${pass}`);
-  } catch(e){
-    console.error(e);
-    alert("Error al crear: "+e.message);
-  }
+  }).catch(function(e){msg.textContent="Error: "+e.message;console.error(e);});
 };
 
-window.abrirProyecto = async function(id){
-  const snap = await getDoc(doc(db,"proyectos",id));
-  if(!snap.exists()) return;
-  proyectoActivo = {id, ...snap.data()};
-  document.getElementById("res-det-nombre").textContent = proyectoActivo.nombre;
-  document.getElementById("res-lista-proyectos").style.display="none";
-  document.getElementById("res-detalle").style.display="block";
-  renderEtapasResidente();
-  escucharBitacora();
-  escucharAlertas();
+window.abrirProyecto=function(id){
+  db.collection("proyectos").doc(id).get().then(function(snap){
+    if(!snap.exists)return;
+    proyectoActivo=Object.assign({id:id},snap.data());
+    document.getElementById("res-det-nombre").textContent=proyectoActivo.nombre;
+    document.getElementById("res-lista").style.display="none";
+    document.getElementById("res-detalle").style.display="block";
+    renderEtapas();escucharBit();escucharAlt();
+  });
 };
 
-window.volverLista = function(){
+document.getElementById("btn-volver").onclick=function(){
+  if(unsubBit)unsubBit();if(unsubAlt)unsubAlt();
   proyectoActivo=null;
   document.getElementById("res-detalle").style.display="none";
-  document.getElementById("res-lista-proyectos").style.display="block";
+  document.getElementById("res-lista").style.display="block";
 };
 
-function renderEtapasResidente(){
-  if(!proyectoActivo) return;
-  const etapas = proyectoActivo.etapas||{};
-  const avance = calcAvance(etapas);
-  document.getElementById("res-avance-pct").textContent = avance+"%";
-  const ETAPAS = ["Cimentación y estructura","Albañilería y muros","Instalaciones","Acabados interiores","Fachada y exteriores","Limpieza y entrega"];
-  document.getElementById("res-etapas-lista").innerHTML = ETAPAS.map(e=>{
-    const pct = etapas[e]||0;
-    const col = COLS[e]||"#888";
-    return `<div class="etapa-row">
-      <div class="etapa-top"><span class="etapa-name">${e}</span><span class="etapa-pct" style="color:${col};">${pct}%</span></div>
-      <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${col};"></div></div>
-    </div>`;
+document.querySelectorAll(".tab[data-tab]").forEach(function(tab){
+  tab.onclick=function(){
+    var id=this.dataset.tab;
+    this.closest(".card").querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");});
+    this.classList.add("active");
+    this.closest(".card").querySelectorAll(".panel").forEach(function(p){p.classList.remove("active");});
+    document.getElementById("res-tab-"+id).classList.add("active");
+  };
+});
+
+function renderEtapas(){
+  if(!proyectoActivo)return;
+  var etapas=proyectoActivo.etapas||{};
+  document.getElementById("res-avance-pct").textContent=avgEtapas(etapas)+"%";
+  document.getElementById("res-etapas").innerHTML=ETAPAS.map(function(e){
+    var pct=etapas[e]||0,col=COLS[e]||"#888";
+    return'<div class="etapa-row"><div class="etapa-top"><span class="etapa-name">'+e+'</span><span class="etapa-pct" style="color:'+col+';">'+pct+'%</span></div><div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:'+col+';"></div></div></div>';
   }).join("");
 }
 
-// ── REPORTE ─────────────────────────────────────────────
-window.previewFoto = function(input){
-  const prev = document.getElementById("rep-foto-preview");
-  if(input.files&&input.files[0]){
-    prev.src = URL.createObjectURL(input.files[0]);
-    prev.style.display="block";
-  }
+document.getElementById("rep-pct").oninput=function(){document.getElementById("rep-pct-val").textContent=this.value+"%";};
+document.getElementById("rep-foto").onchange=function(){var p=document.getElementById("rep-foto-prev");if(this.files&&this.files[0]){p.src=URL.createObjectURL(this.files[0]);p.style.display="block";}};
+
+document.getElementById("btn-pub-reporte").onclick=function(){
+  if(!proyectoActivo)return;
+  var etapa=document.getElementById("rep-etapa").value;
+  var pct=parseInt(document.getElementById("rep-pct").value);
+  var nota=document.getElementById("rep-nota").value.trim();
+  var estado=document.getElementById("rep-estado").value;
+  var msg=document.getElementById("rep-msg");
+  if(!nota){alert("Escribe una nota.");return;}
+  msg.textContent="Guardando...";msg.style.display="block";msg.style.color="var(--text2)";
+  var fi=document.getElementById("rep-foto");
+  var guardar=function(fotoURL){
+    db.collection("proyectos").doc(proyectoActivo.id).collection("bitacora").add({etapa:etapa,pct:pct,nota:nota,estado:estado,fotoURL:fotoURL||null,fecha:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){
+      var etapas=Object.assign({},proyectoActivo.etapas||{});etapas[etapa]=pct;
+      return db.collection("proyectos").doc(proyectoActivo.id).set({etapas:etapas,ultimoReporte:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).then(function(){
+        proyectoActivo.etapas=etapas;renderEtapas();
+        msg.textContent="Publicado";msg.style.color="var(--success)";
+        document.getElementById("rep-nota").value="";
+        document.getElementById("rep-foto-prev").style.display="none";
+        setTimeout(function(){msg.style.display="none";},3000);
+      });
+    }).catch(function(e){msg.textContent="Error: "+e.message;console.error(e);});
+  };
+  if(fi.files&&fi.files[0]){
+    var r=storage.ref("proyectos/"+proyectoActivo.id+"/"+Date.now()+"_"+fi.files[0].name);
+    r.put(fi.files[0]).then(function(){return r.getDownloadURL();}).then(function(url){guardar(url);}).catch(function(){guardar(null);});
+  } else {guardar(null);}
 };
 
-window.guardarReporte = async function(){
-  if(!proyectoActivo) return;
-  const etapa  = document.getElementById("rep-etapa").value;
-  const pct    = parseInt(document.getElementById("rep-pct").value);
-  const nota   = document.getElementById("rep-nota").value.trim();
-  const estado = document.getElementById("rep-estado").value;
-  const msg    = document.getElementById("rep-msg");
-  if(!nota){ alert("Escribe una nota de avance."); return; }
-
-  msg.textContent="Guardando…"; msg.style.display="block"; msg.style.color=getComputedStyle(document.documentElement).getPropertyValue("--text2");
-
-  let fotoURL = null;
-  const fotoInput = document.getElementById("rep-foto");
-  if(fotoInput.files&&fotoInput.files[0]){
-    const file = fotoInput.files[0];
-    const sRef = ref(storage,`proyectos/${proyectoActivo.id}/${Date.now()}_${file.name}`);
-    await uploadBytes(sRef, file);
-    fotoURL = await getDownloadURL(sRef);
-  }
-
-  // Guardar reporte en bitácora
-  await addDoc(collection(db,"proyectos",proyectoActivo.id,"bitacora"),{
-    etapa, pct, nota, estado, fotoURL, fecha:serverTimestamp(), residente:ADMIN_EMAIL
-  });
-
-  // Actualizar % en proyecto
-  const etapas = proyectoActivo.etapas||{};
-  etapas[etapa] = pct;
-  await setDoc(doc(db,"proyectos",proyectoActivo.id),{etapas, ultimoReporte:serverTimestamp()},{merge:true});
-  proyectoActivo.etapas = etapas;
-
-  msg.textContent="✓ Reporte publicado"; msg.style.color="#2A7A4B";
-  document.getElementById("rep-nota").value="";
-  document.getElementById("rep-foto-preview").style.display="none";
-  renderEtapasResidente();
-  setTimeout(()=>msg.style.display="none",3000);
-};
-
-// ── BITÁCORA ─────────────────────────────────────────────
-function escucharBitacora(){
-  if(!proyectoActivo) return;
-  const q = query(collection(db,"proyectos",proyectoActivo.id,"bitacora"), orderBy("fecha","desc"));
-  onSnapshot(q, snap=>{
-    const lista = document.getElementById("res-bitacora-lista");
-    if(snap.empty){ lista.innerHTML='<div class="empty">Sin reportes aún.</div>'; return; }
-    lista.innerHTML = snap.docs.map(d=>{
-      const b=d.data();
-      const estadoClass = b.estado==="tiempo"?"estado-tiempo":b.estado==="adelanto"?"estado-adelanto":"estado-retraso";
-      const estadoLabel = b.estado==="tiempo"?"En tiempo":b.estado==="adelanto"?"Adelantado":b.estado==="retraso_menor"?"Retraso menor":"Retraso";
-      return `<div class="bit-item">
-        <div class="bit-top">
-          <span class="bit-badge">${b.etapa||""}</span>
-          <span class="bit-fecha">${fmt(b.fecha)}</span>
-        </div>
-        <div class="bit-texto">${b.nota||""}</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span class="bit-estado ${estadoClass}">${estadoLabel}</span>
-          <span style="font-size:12px;font-weight:600;color:${COLS[b.etapa]||'#888'};">${b.pct||0}%</span>
-        </div>
-        ${b.fotoURL?`<div class="bit-img-wrap"><img src="${b.fotoURL}" class="bit-img" alt="Avance"></div>`:""}
-      </div>`;
-    }).join("");
-    if(snap.docs[0]){
-      document.getElementById("res-ultimo").textContent = fmt(snap.docs[0].data().fecha);
-    }
+function escucharBit(){
+  if(unsubBit)unsubBit();
+  unsubBit=db.collection("proyectos").doc(proyectoActivo.id).collection("bitacora").orderBy("fecha","desc").onSnapshot(function(snap){
+    var el=document.getElementById("res-bitacora");
+    if(snap.empty){el.innerHTML='<div class="empty">Sin reportes aun.</div>';return;}
+    var first=snap.docs[0].data();if(first.fecha)document.getElementById("res-ultimo").textContent=fmt(first.fecha);
+    el.innerHTML=snap.docs.map(function(d){var b=d.data();return'<div class="bit-item"><div class="bit-top"><span class="bit-badge">'+b.etapa+'</span><span class="bit-fecha">'+fmt(b.fecha)+'</span></div><div class="bit-texto">'+b.nota+'</div><span style="font-size:12px;font-weight:600;color:'+(COLS[b.etapa]||"#888")+';">'+b.pct+'%</span>'+(b.fotoURL?'<img src="'+b.fotoURL+'" class="bit-img" alt="foto">':'')+'</div>';}).join("");
   });
 }
 
-// ── ALERTAS ─────────────────────────────────────────────
-window.guardarAlerta = async function(){
-  if(!proyectoActivo) return;
-  const texto = document.getElementById("alerta-texto").value.trim();
-  const tipo  = document.getElementById("alerta-tipo").value;
-  if(!texto) return;
-  await addDoc(collection(db,"proyectos",proyectoActivo.id,"alertas"),{texto,tipo,fecha:serverTimestamp()});
-  document.getElementById("alerta-texto").value="";
+function escucharAlt(){
+  if(unsubAlt)unsubAlt();
+  unsubAlt=db.collection("proyectos").doc(proyectoActivo.id).collection("alertas").orderBy("fecha","desc").onSnapshot(function(snap){
+    var el=document.getElementById("res-alertas");
+    if(snap.empty){el.innerHTML='<div class="empty">Sin alertas.</div>';return;}
+    el.innerHTML=snap.docs.map(function(d){var a=d.data();return'<div class="alerta-item"><div class="alerta-dot" style="background:'+(ALERT_COLS[a.tipo]||"#888")+';"></div><div><div>'+a.texto+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">'+fmt(a.fecha)+'</div></div></div>';}).join("");
+  });
+}
+
+document.getElementById("btn-add-alerta").onclick=function(){
+  if(!proyectoActivo)return;
+  var texto=document.getElementById("alerta-texto").value.trim();
+  var tipo=document.getElementById("alerta-tipo").value;
+  if(!texto)return;
+  db.collection("proyectos").doc(proyectoActivo.id).collection("alertas").add({texto:texto,tipo:tipo,fecha:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){document.getElementById("alerta-texto").value="";});
 };
 
-function escucharAlertas(){
-  if(!proyectoActivo) return;
-  const q = query(collection(db,"proyectos",proyectoActivo.id,"alertas"), orderBy("fecha","desc"));
-  onSnapshot(q, snap=>{
-    const lista = document.getElementById("res-alertas-lista");
-    if(snap.empty){ lista.innerHTML='<div class="empty">Sin alertas.</div>'; return; }
-    const colores={warn:"#BA7517",ok:"#2A7A4B",danger:"#A32D2D",info:"#2E5599"};
-    lista.innerHTML = snap.docs.map(d=>{
-      const a=d.data();
-      return `<div class="alerta-item">
-        <div class="alerta-dot" style="background:${colores[a.tipo]||'#888'};"></div>
-        <div><div style="font-size:12px;">${a.texto}</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${fmt(a.fecha)}</div></div>
-      </div>`;
-    }).join("");
+function cargarCliente(proyectoId){
+  db.collection("proyectos").doc(proyectoId).get().then(function(snap){
+    if(!snap.exists){document.getElementById("cli-contenido").innerHTML='<div class="empty">Proyecto no encontrado.</div>';return;}
+    var p=snap.data(),a=avgEtapas(p.etapas||{});
+    document.getElementById("cli-contenido").innerHTML='<div class="card"><div class="card-body"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><div><div style="font-size:15px;font-weight:600;">'+(p.nombre||"Mi obra")+'</div><div style="font-size:12px;color:var(--text2);margin-top:2px;">'+(p.tipo||"")+' - '+(p.inicio||"")+' a '+(p.fin||"")+'</div></div><span class="badge badge-en">En obra</span></div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px;"><span>Avance general</span><span style="font-weight:600;">'+a+'%</span></div><div class="prog-track"><div class="prog-fill" style="width:'+a+'%;"></div></div></div></div><div class="card"><div class="card-head">Avance por etapa</div><div class="card-body">'+ETAPAS.map(function(e){var pct=(p.etapas||{})[e]||0,col=COLS[e]||"#888";return'<div class="etapa-row"><div class="etapa-top"><span class="etapa-name">'+e+'</span><span class="etapa-pct" style="color:'+col+';">'+pct+'%</span></div><div class="prog-track"><div class="prog-fill" style="width:'+pct+'%;background:'+col+';"></div></div></div>';}).join("")+'</div></div><div class="card"><div class="card-head">Bitacora</div><div class="card-body" id="cli-bit"><div class="loading">Cargando...</div></div></div><div class="card"><div class="card-head">Alertas</div><div class="card-body" id="cli-alt"><div class="loading">Cargando...</div></div></div><div class="app-footer">Seguimiento por Arq. Alvaro Chapa - 81 2289 4100</div>';
+    db.collection("proyectos").doc(proyectoId).collection("bitacora").orderBy("fecha","desc").onSnapshot(function(snap){var el=document.getElementById("cli-bit");if(!el)return;if(snap.empty){el.innerHTML='<div class="empty">Sin reportes aun.</div>';return;}el.innerHTML=snap.docs.map(function(d){var b=d.data();return'<div class="bit-item"><div class="bit-top"><span class="bit-badge">'+b.etapa+'</span><span class="bit-fecha">'+fmt(b.fecha)+'</span></div><div class="bit-texto">'+b.nota+'</div><span style="font-size:12px;font-weight:600;color:'+(COLS[b.etapa]||"#888")+';">'+b.pct+'%</span>'+(b.fotoURL?'<img src="'+b.fotoURL+'" class="bit-img" alt="foto">':'')+'</div>';}).join("");});
+    db.collection("proyectos").doc(proyectoId).collection("alertas").orderBy("fecha","desc").onSnapshot(function(snap){var el=document.getElementById("cli-alt");if(!el)return;if(snap.empty){el.innerHTML='<div class="empty">Sin alertas.</div>';return;}el.innerHTML=snap.docs.map(function(d){var a=d.data();return'<div class="alerta-item"><div class="alerta-dot" style="background:'+(ALERT_COLS[a.tipo]||"#888")+';"></div><div><div>'+a.texto+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">'+fmt(a.fecha)+'</div></div></div>';}).join("");});
   });
 }
-
-// ── CLIENTE ─────────────────────────────────────────────
-async function cargarProyectoCliente(proyectoId){
-  const snap = await getDoc(doc(db,"proyectos",proyectoId));
-  if(!snap.exists()){ document.getElementById("cli-contenido").innerHTML='<div class="empty">Proyecto no encontrado.</div>'; return; }
-  const p = snap.data();
-  const avance = calcAvance(p.etapas||{});
-  const ETAPAS = ["Cimentación y estructura","Albañilería y muros","Instalaciones","Acabados interiores","Fachada y exteriores","Limpieza y entrega"];
-
-  document.getElementById("cli-contenido").innerHTML = `
-    <div class="card">
-      <div class="card-body">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-          <div>
-            <div style="font-size:15px;font-weight:600;color:var(--text1);">${p.nombre||"Mi obra"}</div>
-            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${p.tipo||""} · ${p.inicio||""} – ${p.fin||""}</div>
-          </div>
-          <span class="badge badge-en">En obra</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px;"><span>Avance general</span><span style="font-weight:600;">${avance}%</span></div>
-        <div class="prog-track"><div class="prog-fill" style="width:${avance}%;background:var(--success);"></div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">Avance por etapa</div>
-      <div class="card-body">
-        ${ETAPAS.map(e=>{
-          const pct=(p.etapas||{})[e]||0; const col=COLS[e]||"#888";
-          return `<div class="etapa-row">
-            <div class="etapa-top"><span class="etapa-name">${e}</span><span class="etapa-pct" style="color:${col};">${pct}%</span></div>
-            <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${col};"></div></div>
-            <div class="etapa-meta"><span>${pct===100?"✓ Completada":pct>0?"En proceso":"Pendiente"}</span></div>
-          </div>`;
-        }).join("")}
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">Bitácora de avances</div>
-      <div class="card-body" id="cli-bitacora"><div class="loading">Cargando…</div></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">Alertas y notas</div>
-      <div class="card-body" id="cli-alertas"><div class="loading">Cargando…</div></div>
-    </div>
-
-    <div class="app-footer">
-      Seguimiento de obra por Arq. Alvaro Chapa Villarreal<br>
-      📱 WhatsApp 81 2289 4100 · Preguntas o comentarios, contáctanos
-    </div>
-  `;
-
-  // Bitácora cliente en tiempo real
-  const qb = query(collection(db,"proyectos",proyectoId,"bitacora"), orderBy("fecha","desc"));
-  onSnapshot(qb, snap=>{
-    const el = document.getElementById("cli-bitacora");
-    if(!el) return;
-    if(snap.empty){ el.innerHTML='<div class="empty">Sin reportes aún. El residente publicará avances pronto.</div>'; return; }
-    el.innerHTML = snap.docs.map(d=>{
-      const b=d.data();
-      const estadoClass=b.estado==="tiempo"?"estado-tiempo":b.estado==="adelanto"?"estado-adelanto":"estado-retraso";
-      const estadoLabel=b.estado==="tiempo"?"En tiempo":b.estado==="adelanto"?"Adelantado":b.estado==="retraso_menor"?"Retraso menor":"Retraso";
-      return `<div class="bit-item">
-        <div class="bit-top"><span class="bit-badge">${b.etapa||""}</span><span class="bit-fecha">${fmt(b.fecha)}</span></div>
-        <div class="bit-texto">${b.nota||""}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span class="bit-estado ${estadoClass}">${estadoLabel}</span>
-          <span style="font-size:12px;font-weight:600;color:${COLS[b.etapa]||'#888'};">${b.pct||0}%</span>
-        </div>
-        ${b.fotoURL?`<div class="bit-img-wrap"><img src="${b.fotoURL}" class="bit-img" alt="Foto de avance"></div>`:""}
-      </div>`;
-    }).join("");
-  });
-
-  // Alertas cliente
-  const qa = query(collection(db,"proyectos",proyectoId,"alertas"), orderBy("fecha","desc"));
-  onSnapshot(qa, snap=>{
-    const el = document.getElementById("cli-alertas");
-    if(!el) return;
-    if(snap.empty){ el.innerHTML='<div class="empty">Sin alertas.</div>'; return; }
-    const colores={warn:"#BA7517",ok:"#2A7A4B",danger:"#A32D2D",info:"#2E5599"};
-    el.innerHTML = snap.docs.map(d=>{
-      const a=d.data();
-      return `<div class="alerta-item">
-        <div class="alerta-dot" style="background:${colores[a.tipo]||'#888'};"></div>
-        <div><div style="font-size:12px;">${a.texto}</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${fmt(a.fecha)}</div></div>
-      </div>`;
-    }).join("");
-  });
-}
-
-// ── HELPERS ──────────────────────────────────────────────
-function showScreen(s){
-  ["login","residente","cliente"].forEach(id=>document.getElementById("screen-"+id).style.display="none");
-  document.getElementById("screen-"+s).style.display="block";
-}
-
-window.showResTab = function(id,el){
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.getElementById("res-tab-"+id).classList.add("active");
-  el.classList.add("active");
-};
-
-
-// Conectar botones al DOM después de cargar
-document.getElementById("btn-login").addEventListener("click", loginUser);
-
-// Exponer funciones globales necesarias desde el HTML
-window.loginUser = loginUser;
-window.cerrarSesion = cerrarSesion;
-window.mostrarNuevoProyecto = mostrarNuevoProyecto;
-window.cancelarNuevoProyecto = cancelarNuevoProyecto;
-window.crearProyecto = crearProyecto;
-window.abrirProyecto = abrirProyecto;
-window.volverLista = volverLista;
-window.showResTab = showResTab;
-window.previewFoto = previewFoto;
-window.guardarReporte = guardarReporte;
-window.guardarAlerta = guardarAlerta;
 </script>
 </body>
 </html>
