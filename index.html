@@ -144,7 +144,7 @@ textarea{resize:vertical;min-height:80px;}
     <div class="login-sub">Ingresa con tu correo y contraseña</div>
     <div class="field"><label>Correo electrónico</label><input type="email" id="login-email" placeholder="correo@ejemplo.com"></div>
     <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
-    <div style="margin-top:16px;"><button class="btn btn-primary" onclick="loginUser()">Entrar</button></div>
+    <div style="margin-top:16px;"><button class="btn btn-primary" id="btn-login">Entrar</button></div>
     <p id="login-error" style="color:var(--danger);font-size:12px;margin-top:10px;display:none;"></p>
     <p class="note" style="margin-top:16px;text-align:center;">¿Eres cliente? Usa el correo y contraseña que te proporcionó el despacho.</p>
   </div>
@@ -703,6 +703,22 @@ window.showResTab = function(id,el){
   el.classList.add("active");
 };
 
+
+// Conectar botones al DOM después de cargar
+document.getElementById("btn-login").addEventListener("click", loginUser);
+
+// Exponer funciones globales necesarias desde el HTML
+window.loginUser = loginUser;
+window.cerrarSesion = cerrarSesion;
+window.mostrarNuevoProyecto = mostrarNuevoProyecto;
+window.cancelarNuevoProyecto = cancelarNuevoProyecto;
+window.crearProyecto = crearProyecto;
+window.abrirProyecto = abrirProyecto;
+window.volverLista = volverLista;
+window.showResTab = showResTab;
+window.previewFoto = previewFoto;
+window.guardarReporte = guardarReporte;
+window.guardarAlerta = guardarAlerta;
 </script>
 </body>
 </html>
