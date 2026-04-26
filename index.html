@@ -188,18 +188,14 @@ function avgEtapas(etapas){var v=Object.values(etapas||{});return v.length?Math.
 function showScreen(s){["login","residente","cliente"].forEach(function(id){document.getElementById("screen-"+id).style.display="none";});document.getElementById("screen-"+s).style.display="block";}
 
 auth.onAuthStateChanged(function(user){
-  console.log("AUTH STATE:", user ? user.uid : "null");
   if(!user){showScreen("login");return;}
   db.collection("usuarios").doc(user.uid).get().then(function(snap){
-    console.log("SNAP EXISTS:", snap.exists);
     if(!snap.exists){
-      console.error("Usuario no encontrado en Firestore");
       showScreen("residente");
       cargarProyectos();
       return;
     }
     var d=snap.data();
-    console.log("ROLE:", d.role);
     if(d.role==="residente"||d.role==="admin"){showScreen("residente");cargarProyectos();}
     else if(d.role==="cliente"){showScreen("cliente");cargarCliente(d.proyectoId);}
     else{showScreen("residente");cargarProyectos();}
