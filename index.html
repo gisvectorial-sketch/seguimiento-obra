@@ -199,7 +199,7 @@ auth.onAuthStateChanged(function(user){
 
 // DEBUG: auto-test login al cargar
 setTimeout(function(){
-  firebase.auth().signInWithEmailAndPassword("alvaro.chapa@despacho.com","Chapa2025")
+  firebase.auth().signInWithEmailAndPassword("alvaro.chapa@despacho.com","Chapa2025!")
     .then(function(u){console.log("LOGIN OK - UID:",u.user.uid);})
     .catch(function(e){console.error("LOGIN ERROR:",e.code,e.message);});
 },2000);
