@@ -197,6 +197,13 @@ auth.onAuthStateChanged(function(user){
   }).catch(function(e){console.error(e);});
 });
 
+// DEBUG: auto-test login al cargar
+setTimeout(function(){
+  firebase.auth().signInWithEmailAndPassword("alvaro.chapa@despacho.com","Chapa2025")
+    .then(function(u){console.log("LOGIN OK - UID:",u.user.uid);})
+    .catch(function(e){console.error("LOGIN ERROR:",e.code,e.message);});
+},2000);
+
 document.getElementById("btn-login").onclick=function(){
   var email=document.getElementById("login-email").value.trim();
   var pass=document.getElementById("login-pass").value;
