@@ -7,8 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#F5F4F0;--surface:#FFF;--border:#E2E0D8;--border2:#CECCC2;--text1:#1A1916;--text2:#5A5850;--text3:#9A9890;--accent:#1F3864;--accent2:#2E5599;--success:#2A7A4B;--suc-bg:#EAF4EE;--warn:#854F0B;--warn-bg:#FDF3E3;--danger:#A32D2D;--dan-bg:#FCEBEB;--radius:12px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.06);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -144,7 +144,7 @@ textarea{resize:vertical;min-height:80px;}
           <div class="field"><label>% de avance</label><div class="range-wrap"><input type="range" min="0" max="100" step="5" value="50" id="rep-pct"><span class="range-val" id="rep-pct-val">50%</span></div></div>
           <div class="field"><label>Nota</label><textarea id="rep-nota" placeholder="Describe el avance..."></textarea></div>
           <div class="field"><label>Estado</label><select id="rep-estado"><option value="tiempo">En tiempo</option><option value="retraso_menor">Retraso menor</option><option value="retraso">Retraso significativo</option><option value="adelanto">Adelantado</option></select></div>
-          <div class="field"><label>Foto (opcional)</label><input type="file" id="rep-foto" accept="image/*" capture="environment"><img id="rep-foto-prev" class="foto-preview" style="display:none;"></div>
+                    <div class="field"><label>Foto de avance (opcional)</label><input type="file" id="rep-foto" accept="image/*" capture="environment"><img id="rep-foto-prev" class="foto-preview" style="display:none;"></div>
           <button class="btn btn-primary" id="btn-pub-reporte" style="margin-top:8px;">Publicar reporte</button>
           <p id="rep-msg" style="font-size:12px;margin-top:8px;display:none;"></p>
         </div>
@@ -296,6 +296,8 @@ function renderEtapas(){
 document.getElementById("rep-pct").oninput=function(){document.getElementById("rep-pct-val").textContent=this.value+"%";};
 document.getElementById("rep-foto").onchange=function(){var p=document.getElementById("rep-foto-prev");if(this.files&&this.files[0]){p.src=URL.createObjectURL(this.files[0]);p.style.display="block";}};
 
+document.getElementById("rep-foto").onchange=function(){var p=document.getElementById("rep-foto-prev");if(this.files&&this.files[0]){p.src=URL.createObjectURL(this.files[0]);p.style.display="block";}};
+
 document.getElementById("btn-pub-reporte").onclick=function(){
   if(!proyectoActivo)return;
   var etapa=document.getElementById("rep-etapa").value;
@@ -318,7 +320,7 @@ document.getElementById("btn-pub-reporte").onclick=function(){
       });
     }).catch(function(e){msg.textContent="Error: "+e.message;console.error(e);});
   };
-  if(fi.files&&fi.files[0]){
+  if(fi&&fi.files&&fi.files[0]){
     var r=storage.ref("proyectos/"+proyectoActivo.id+"/"+Date.now()+"_"+fi.files[0].name);
     r.put(fi.files[0]).then(function(){return r.getDownloadURL();}).then(function(url){guardar(url);}).catch(function(){guardar(null);});
   } else {guardar(null);}
