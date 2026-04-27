@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Seguimiento de Obra — Arq. Alvaro Chapa Villarreal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
@@ -157,6 +158,10 @@ textarea{resize:vertical;min-height:80px;}
           <div id="res-alertas"><div class="loading">Cargando...</div></div>
         </div>
       </div>
+      <button id="btn-pdf-reporte" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:11px;box-shadow:0 4px 14px rgba(31,56,100,0.22);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="white" stroke-width="1.2" fill="none"/><path d="M10 2v4h4M5 9h6M5 11.5h4" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Exportar reporte PDF
+      </button>
       <div class="app-footer">Arq. Alvaro Chapa · 81 2289 4100 · Seguimiento de obra NL 2025</div>
     </div>
   </div>
@@ -361,6 +366,137 @@ function cargarCliente(proyectoId){
     db.collection("proyectos").doc(proyectoId).collection("bitacora").orderBy("fecha","desc").onSnapshot(function(snap){var el=document.getElementById("cli-bit");if(!el)return;if(snap.empty){el.innerHTML='<div class="empty">Sin reportes aun.</div>';return;}el.innerHTML=snap.docs.map(function(d){var b=d.data();return'<div class="bit-item"><div class="bit-top"><span class="bit-badge">'+b.etapa+'</span><span class="bit-fecha">'+fmt(b.fecha)+'</span></div><div class="bit-texto">'+b.nota+'</div><span style="font-size:12px;font-weight:600;color:'+(COLS[b.etapa]||"#888")+';">'+b.pct+'%</span>'+(b.fotoURL?'<img src="'+b.fotoURL+'" class="bit-img" alt="foto">':'')+'</div>';}).join("");});
     db.collection("proyectos").doc(proyectoId).collection("alertas").orderBy("fecha","desc").onSnapshot(function(snap){var el=document.getElementById("cli-alt");if(!el)return;if(snap.empty){el.innerHTML='<div class="empty">Sin alertas.</div>';return;}el.innerHTML=snap.docs.map(function(d){var a=d.data();return'<div class="alerta-item"><div class="alerta-dot" style="background:'+(ALERT_COLS[a.tipo]||"#888")+';"></div><div><div>'+a.texto+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">'+fmt(a.fecha)+'</div></div></div>';}).join("");});
   });
+}
+
+// ── EXPORTAR PDF ─────────────────────────────────────────
+document.getElementById("btn-pdf-reporte").onclick=function(){
+  if(!proyectoActivo){alert("Abre un proyecto primero.");return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({unit:"mm",format:"a4"});
+  var W=210,mg=18,cw=W-mg*2;
+  var fecha=new Date().toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"});
+
+  // Encabezado
+  doc.setFillColor(31,56,100);doc.rect(0,0,W,32,"F");
+  doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont("helvetica","bold");
+  doc.text("Reporte de Avance de Obra",mg,13);
+  doc.setFontSize(10);doc.setFont("helvetica","normal");
+  doc.text("Arq. Alvaro Chapa Villarreal",mg,20);
+  doc.text("WhatsApp: 81 2289 4100",mg,26);
+  doc.text("Fecha: "+fecha,W-mg,20,{align:"right"});
+
+  var y=40;
+  // Datos del proyecto
+  doc.setTextColor(80,80,80);doc.setFontSize(8);doc.setFont("helvetica","bold");
+  doc.text("PROYECTO",mg,y);doc.text("CLIENTE",mg+80,y);doc.text("TIPO",mg+140,y);
+  y+=5;doc.setFont("helvetica","normal");doc.setTextColor(30,30,30);
+  doc.text(proyectoActivo.nombre||"-",mg,y);
+  doc.text(proyectoActivo.cliente||"-",mg+80,y);
+  doc.text(proyectoActivo.tipo||"-",mg+140,y);
+  y+=4;doc.setTextColor(120,120,120);doc.setFontSize(7.5);
+  doc.text("Inicio: "+(proyectoActivo.inicio||"-")+" · Entrega estimada: "+(proyectoActivo.fin||"-"),mg,y);
+
+  // Avance general
+  y+=10;
+  var etapas=proyectoActivo.etapas||{};
+  var vals=Object.values(etapas);
+  var avance=vals.length?Math.round(vals.reduce(function(s,x){return s+x;},0)/vals.length):0;
+  doc.setFillColor(238,243,251);doc.roundedRect(mg,y,cw,22,3,3,"F");
+  doc.setTextColor(31,56,100);doc.setFontSize(9);doc.setFont("helvetica","bold");
+  doc.text("AVANCE GENERAL",mg+6,y+8);
+  doc.setFontSize(20);doc.text(avance+"%",mg+6,y+18);
+  doc.setFontSize(9);doc.setFont("helvetica","normal");doc.setTextColor(100,100,100);
+  doc.text("Inicio: "+(proyectoActivo.inicio||"-")+" → Entrega: "+(proyectoActivo.fin||"-"),mg+cw-4,y+18,{align:"right"});
+
+  // Etapas
+  y+=30;
+  var ETAPAS_LIST=["Cimentacion y estructura","Albanileria y muros","Instalaciones","Acabados interiores","Fachada y exteriores","Limpieza y entrega"];
+  var COLS_PDF=["#378ADD","#1D9E75","#7F77DD","#EF9F27","#D85A30","#2A7A4B"];
+  doc.setFontSize(9);doc.setFont("helvetica","bold");doc.setTextColor(31,56,100);
+  doc.text("Avance por etapa",mg,y);y+=6;
+
+  ETAPAS_LIST.forEach(function(e,i){
+    var pct=etapas[e]||0;
+    var col=COLS_PDF[i]||"#888";
+    var rgb=hexToRgb(col);
+    doc.setFillColor(i%2===0?248:255,i%2===0?250:255,i%2===0?252:255);
+    doc.rect(mg,y,cw,8,"F");
+    doc.setTextColor(50,50,50);doc.setFontSize(8);doc.setFont("helvetica","normal");
+    doc.text(e,mg+3,y+5.5);
+    // Barra
+    doc.setFillColor(230,230,230);doc.rect(mg+100,y+2,60,4,"F");
+    if(pct>0){doc.setFillColor(rgb.r,rgb.g,rgb.b);doc.rect(mg+100,y+2,60*pct/100,4,"F");}
+    doc.setFont("helvetica","bold");doc.setTextColor(rgb.r,rgb.g,rgb.b);
+    doc.text(pct+"%",mg+163,y+5.5);
+    y+=8;
+  });
+
+  // Último reporte
+  y+=6;
+  db.collection("proyectos").doc(proyectoActivo.id).collection("bitacora")
+    .orderBy("fecha","desc").limit(1).get().then(function(snap){
+      doc.setFontSize(9);doc.setFont("helvetica","bold");doc.setTextColor(31,56,100);
+      doc.text("Ultimo reporte",mg,y);y+=6;
+
+      if(!snap.empty){
+        var b=snap.docs[0].data();
+        var fechaRep=b.fecha?b.fecha.toDate().toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"-";
+        doc.setFillColor(245,248,245);doc.roundedRect(mg,y,cw,28,2,2,"F");
+        doc.setTextColor(50,50,50);doc.setFontSize(8);doc.setFont("helvetica","bold");
+        doc.text(b.etapa||"-",mg+4,y+6);
+        doc.setFont("helvetica","normal");doc.setTextColor(80,80,80);
+        doc.text(fechaRep,mg+cw-4,y+6,{align:"right"});
+        doc.setTextColor(30,30,30);
+        var notaLines=doc.splitTextToSize(b.nota||"",cw-8);
+        doc.text(notaLines,mg+4,y+13);
+        var estadoLabel=b.estado==="tiempo"?"En tiempo":b.estado==="adelanto"?"Adelantado":b.estado==="retraso_menor"?"Retraso menor":"Retraso";
+        doc.setFont("helvetica","bold");doc.setTextColor(42,122,75);
+        doc.text(estadoLabel,mg+4,y+24);
+        doc.setFont("helvetica","bold");doc.setTextColor(31,56,100);
+        doc.text((b.pct||0)+"%",mg+cw-4,y+24,{align:"right"});
+        y+=34;
+
+        // Foto si existe
+        if(b.fotoURL){
+          var img=new Image();
+          img.crossOrigin="anonymous";
+          img.onload=function(){
+            var maxW=cw,maxH=70;
+            var ratio=Math.min(maxW/img.width,maxH/img.height);
+            var iw=img.width*ratio,ih=img.height*ratio;
+            doc.addImage(img,"JPEG",mg,y,iw,ih);
+            y+=ih+6;
+            agregarPie(doc,W,mg);
+            doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
+          };
+          img.onerror=function(){
+            agregarPie(doc,W,mg);
+            doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
+          };
+          img.src=b.fotoURL;
+        } else {
+          agregarPie(doc,W,mg);
+          doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
+        }
+      } else {
+        doc.setTextColor(150,150,150);doc.setFontSize(8);
+        doc.text("Sin reportes registrados aun.",mg,y);
+        agregarPie(doc,W,mg);
+        doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
+      }
+    });
+};
+
+function agregarPie(doc,W,mg){
+  doc.setDrawColor(200,200,200);doc.line(mg,285,W-mg,285);
+  doc.setFontSize(7.5);doc.setTextColor(160,160,160);doc.setFont("helvetica","normal");
+  doc.text("Arq. Alvaro Chapa Villarreal · 81 2289 4100 · Seguimiento de obra NL 2025",mg,289);
+  doc.text("Pagina 1",W-mg,289,{align:"right"});
+}
+
+function hexToRgb(hex){
+  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return{r:r,g:g,b:b};
 }
 </script>
 </body>
