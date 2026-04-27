@@ -401,15 +401,19 @@ document.getElementById("btn-pdf-reporte").onclick=function(){
   var etapas=proyectoActivo.etapas||{};
   var vals=Object.values(etapas);
   var avance=vals.length?Math.round(vals.reduce(function(s,x){return s+x;},0)/vals.length):0;
-  doc.setFillColor(238,243,251);doc.roundedRect(mg,y,cw,22,3,3,"F");
+  doc.setFillColor(238,243,251);doc.roundedRect(mg,y,cw,18,3,3,"F");
   doc.setTextColor(31,56,100);doc.setFontSize(9);doc.setFont("helvetica","bold");
   doc.text("AVANCE GENERAL",mg+6,y+8);
-  doc.setFontSize(20);doc.text(avance+"%",mg+6,y+18);
-  doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(100,100,100);
-  doc.text("Del "+(proyectoActivo.inicio||"-")+" al "+(proyectoActivo.fin||"-"),mg+6,y+18);
+  doc.setFontSize(20);doc.text(avance+"%",mg+6,y+15);
+
+
+  // Fechas debajo del recuadro
+  y+=2;
+  doc.setFontSize(7.5);doc.setFont("helvetica","normal");doc.setTextColor(130,130,130);
+  doc.text("Inicio: "+(proyectoActivo.inicio||"-")+"   ·   Entrega estimada: "+(proyectoActivo.fin||"-"),mg,y);
 
   // Etapas
-  y+=30;
+  y+=20;
   var ETAPAS_LIST=["Cimentacion y estructura","Albanileria y muros","Instalaciones","Acabados interiores","Fachada y exteriores","Limpieza y entrega"];
   var COLS_PDF=["#378ADD","#1D9E75","#7F77DD","#EF9F27","#D85A30","#2A7A4B"];
   doc.setFontSize(9);doc.setFont("helvetica","bold");doc.setTextColor(31,56,100);
