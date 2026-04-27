@@ -459,15 +459,8 @@ document.getElementById("btn-pdf-reporte").onclick=function(){
         doc.text((b.pct||0)+"%",mg+cw-4,y+24,{align:"right"});
         y+=34;
 
-        // Foto — enlace clickeable en el PDF
+        // Foto incrustada via fetch
         if(b.fotoURL){
-          doc.setFontSize(9);doc.setFont("helvetica","bold");doc.setTextColor(31,56,100);
-          doc.text("Foto de avance:",mg,y);y+=6;
-          doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(31,56,200);
-          doc.textWithLink("Ver foto de avance (clic aqui)",mg,y,{url:b.fotoURL});
-          doc.setDrawColor(31,56,200);doc.line(mg,y+1,mg+70,y+1);
-          y+=8;
-          // Intentar incrustar la imagen via fetch+blob
           fetch(b.fotoURL).then(function(res){return res.blob();}).then(function(blob){
             var reader=new FileReader();
             reader.onload=function(e){
