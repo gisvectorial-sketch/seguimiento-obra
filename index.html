@@ -405,8 +405,8 @@ document.getElementById("btn-pdf-reporte").onclick=function(){
   doc.setTextColor(31,56,100);doc.setFontSize(9);doc.setFont("helvetica","bold");
   doc.text("AVANCE GENERAL",mg+6,y+8);
   doc.setFontSize(20);doc.text(avance+"%",mg+6,y+18);
-  doc.setFontSize(9);doc.setFont("helvetica","normal");doc.setTextColor(100,100,100);
-  doc.text("Inicio: "+(proyectoActivo.inicio||"-")+" → Entrega: "+(proyectoActivo.fin||"-"),mg+cw-4,y+18,{align:"right"});
+  doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(100,100,100);
+  doc.text((proyectoActivo.inicio||"-")+" → "+(proyectoActivo.fin||"-"),mg+cw-4,y+18,{align:"right"});
 
   // Etapas
   y+=30;
