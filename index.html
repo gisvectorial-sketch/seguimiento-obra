@@ -459,24 +459,41 @@ document.getElementById("btn-pdf-reporte").onclick=function(){
         doc.text((b.pct||0)+"%",mg+cw-4,y+24,{align:"right"});
         y+=34;
 
-        // Foto si existe
+        // Foto — enlace clickeable en el PDF
         if(b.fotoURL){
-          var img=new Image();
-          img.crossOrigin="anonymous";
-          img.onload=function(){
-            var maxW=cw,maxH=70;
-            var ratio=Math.min(maxW/img.width,maxH/img.height);
-            var iw=img.width*ratio,ih=img.height*ratio;
-            doc.addImage(img,"JPEG",mg,y,iw,ih);
-            y+=ih+6;
+          doc.setFontSize(9);doc.setFont("helvetica","bold");doc.setTextColor(31,56,100);
+          doc.text("Foto de avance:",mg,y);y+=6;
+          doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(31,56,200);
+          doc.textWithLink("Ver foto de avance (clic aqui)",mg,y,{url:b.fotoURL});
+          doc.setDrawColor(31,56,200);doc.line(mg,y+1,mg+70,y+1);
+          y+=8;
+          // Intentar incrustar la imagen via fetch+blob
+          fetch(b.fotoURL).then(function(res){return res.blob();}).then(function(blob){
+            var reader=new FileReader();
+            reader.onload=function(e){
+              try{
+                var dataURL=e.target.result;
+                var imgEl=new Image();
+                imgEl.onload=function(){
+                  var maxW=cw,maxH=80;
+                  var ratio=Math.min(maxW/imgEl.width,maxH/imgEl.height);
+                  var iw=imgEl.width*ratio,ih=imgEl.height*ratio;
+                  doc.addImage(dataURL,"JPEG",mg,y,iw,ih);
+                  y+=ih+4;
+                  agregarPie(doc,W,mg);
+                  doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
+                };
+                imgEl.src=dataURL;
+              }catch(err){
+                agregarPie(doc,W,mg);
+                doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
+              }
+            };
+            reader.readAsDataURL(blob);
+          }).catch(function(){
             agregarPie(doc,W,mg);
             doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
-          };
-          img.onerror=function(){
-            agregarPie(doc,W,mg);
-            doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
-          };
-          img.src=b.fotoURL;
+          });
         } else {
           agregarPie(doc,W,mg);
           doc.save("reporte_"+fecha.replace(/ /g,"_")+".pdf");
