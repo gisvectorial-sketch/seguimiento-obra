@@ -406,7 +406,7 @@ document.getElementById("btn-pdf-reporte").onclick=function(){
   doc.text("AVANCE GENERAL",mg+6,y+8);
   doc.setFontSize(20);doc.text(avance+"%",mg+6,y+18);
   doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(100,100,100);
-  doc.text((proyectoActivo.inicio||"-")+" → "+(proyectoActivo.fin||"-"),mg+cw-4,y+18,{align:"right"});
+  doc.text("Del "+(proyectoActivo.inicio||"-")+" al "+(proyectoActivo.fin||"-"),mg+6,y+18);
 
   // Etapas
   y+=30;
